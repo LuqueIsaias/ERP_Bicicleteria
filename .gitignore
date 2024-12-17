@@ -1,0 +1,12 @@
+﻿*.db
+*.db-shm
+*.db-wal
+
+bin/
+obj/
+
+appsettings.json
+appsettings.Development.json
+
+.DS_Store
+Thumbs.db
