@@ -9,5 +9,6 @@ namespace ERP_Bicicleteria.Data
         public ApplicationDbContext(DbContextOptions<ApplicationDbContext> options) : base(options) { }
 
         public DbSet<Product> Products { get; set; }
+        public DbSet<Supplier> Suppliers { get; set; }
     }
 }

@@ -11,8 +11,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace ERP_Bicicleteria.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20241219162434_CorreccionStringEmpty")]
-    partial class CorreccionStringEmpty
+    [Migration("20241228172109_AddSupplier")]
+    partial class AddSupplier
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -50,6 +50,39 @@ namespace ERP_Bicicleteria.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("Products");
+                });
+
+            modelBuilder.Entity("ERP_Bicicleteria.Models.Supplier", b =>
+                {
+                    b.Property<int>("SupplierId")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("SupplierId"));
+
+                    b.Property<string>("Address")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("City")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("ContactName")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Phone")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("SupplierId");
+
+                    b.ToTable("Suppliers");
                 });
 #pragma warning restore 612, 618
         }
