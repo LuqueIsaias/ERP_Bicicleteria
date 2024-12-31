@@ -1,13 +1,13 @@
 ﻿@model ERP_Bicicleteria.Models.Product
 
 @{
-    ViewData["Title"] = "Detalles";
+    ViewData["Title"] = "Details";
 }
 
-<h1>Detalles</h1>
+<h1>Details</h1>
 
 <div>
-    <h4>Producto</h4>
+    <h4>Product</h4>
     <hr />
     <dl class="row">
         <dt class = "col-sm-2">
@@ -28,15 +28,27 @@
         <dd class = "col-sm-10">
             @Html.DisplayFor(model => model.Price)
         </dd>
-        <dt class="col-sm-2">
+        <dt class = "col-sm-2">
             @Html.DisplayNameFor(model => model.SupplierCode)
         </dt>
-        <dd class="col-sm-10">
+        <dd class = "col-sm-10">
             @Html.DisplayFor(model => model.SupplierCode)
+        </dd>
+        <dt class = "col-sm-2">
+            @Html.DisplayNameFor(model => model.Stock)
+        </dt>
+        <dd class = "col-sm-10">
+            @Html.DisplayFor(model => model.Stock)
+        </dd>
+        <dt class = "col-sm-2">
+            @Html.DisplayNameFor(model => model.ReorderLevel)
+        </dt>
+        <dd class = "col-sm-10">
+            @Html.DisplayFor(model => model.ReorderLevel)
         </dd>
     </dl>
 </div>
 <div>
-    <a asp-action="Edit" asp-route-id="@Model?.Id">Editar</a> |
-    <a asp-action="Index">Volver al listado</a>
+    <a asp-action="Edit" asp-route-id="@Model?.Id">Edit</a> |
+    <a asp-action="Index">Back to List</a>
 </div>

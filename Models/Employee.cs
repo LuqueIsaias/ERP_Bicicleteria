@@ -8,5 +8,6 @@ namespace ERP_Bicicleteria.Models
         public DateTime Registration { get; set; }
         public string Role { get; set; } = string.Empty;
         public decimal Salary { get; set; }
+        public ICollection<Order> Orders { get; set; }
     }
 }

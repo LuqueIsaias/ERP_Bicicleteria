@@ -10,22 +10,23 @@ using ERP_Bicicleteria.Models;
 
 namespace ERP_Bicicleteria.Controllers
 {
-    public class ProductsController : Controller
+    public class OrdersController : Controller
     {
         private readonly ApplicationDbContext _context;
 
-        public ProductsController(ApplicationDbContext context)
+        public OrdersController(ApplicationDbContext context)
         {
             _context = context;
         }
 
-        // GET: Products
+        // GET: Orders
         public async Task<IActionResult> Index()
         {
-            return View(await _context.Products.ToListAsync());
+            var applicationDbContext = _context.Order.Include(o => o.Client).Include(o => o.Employee);
+            return View(await applicationDbContext.ToListAsync());
         }
 
-        // GET: Products/Details/5
+        // GET: Orders/Details/5
         public async Task<IActionResult> Details(int? id)
         {
             if (id == null)
@@ -33,39 +34,45 @@ namespace ERP_Bicicleteria.Controllers
                 return NotFound();
             }
 
-            var product = await _context.Products
-                .FirstOrDefaultAsync(m => m.Id == id);
-            if (product == null)
+            var order = await _context.Order
+                .Include(o => o.Client)
+                .Include(o => o.Employee)
+                .FirstOrDefaultAsync(m => m.OrderId == id);
+            if (order == null)
             {
                 return NotFound();
             }
 
-            return View(product);
+            return View(order);
         }
 
-        // GET: Products/Create
+        // GET: Orders/Create
         public IActionResult Create()
         {
+            ViewData["ClientId"] = new SelectList(_context.Client, "ClientId", "ClientId");
+            ViewData["EmployeeId"] = new SelectList(_context.Employee, "EmployeeId", "EmployeeId");
             return View();
         }
 
-        // POST: Products/Create
+        // POST: Orders/Create
         // To protect from overposting attacks, enable the specific properties you want to bind to.
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("Id,Name,Description,Price,SupplierCode,Stock,ReorderLevel")] Product product)
+        public async Task<IActionResult> Create([Bind("OrderId,EmployeeId,ClientId,OrderDate")] Order order)
         {
             if (ModelState.IsValid)
             {
-                _context.Add(product);
+                _context.Add(order);
                 await _context.SaveChangesAsync();
                 return RedirectToAction(nameof(Index));
             }
-            return View(product);
+            ViewData["ClientId"] = new SelectList(_context.Client, "ClientId", "ClientId", order.ClientId);
+            ViewData["EmployeeId"] = new SelectList(_context.Employee, "EmployeeId", "EmployeeId", order.EmployeeId);
+            return View(order);
         }
 
-        // GET: Products/Edit/5
+        // GET: Orders/Edit/5
         public async Task<IActionResult> Edit(int? id)
         {
             if (id == null)
@@ -73,22 +80,24 @@ namespace ERP_Bicicleteria.Controllers
                 return NotFound();
             }
 
-            var product = await _context.Products.FindAsync(id);
-            if (product == null)
+            var order = await _context.Order.FindAsync(id);
+            if (order == null)
             {
                 return NotFound();
             }
-            return View(product);
+            ViewData["ClientId"] = new SelectList(_context.Client, "ClientId", "ClientId", order.ClientId);
+            ViewData["EmployeeId"] = new SelectList(_context.Employee, "EmployeeId", "EmployeeId", order.EmployeeId);
+            return View(order);
         }
 
-        // POST: Products/Edit/5
+        // POST: Orders/Edit/5
         // To protect from overposting attacks, enable the specific properties you want to bind to.
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, [Bind("Id,Name,Description,Price,SupplierCode,Stock,ReorderLevel")] Product product)
+        public async Task<IActionResult> Edit(int id, [Bind("OrderId,EmployeeId,ClientId,OrderDate")] Order order)
         {
-            if (id != product.Id)
+            if (id != order.OrderId)
             {
                 return NotFound();
             }
@@ -97,12 +106,12 @@ namespace ERP_Bicicleteria.Controllers
             {
                 try
                 {
-                    _context.Update(product);
+                    _context.Update(order);
                     await _context.SaveChangesAsync();
                 }
                 catch (DbUpdateConcurrencyException)
                 {
-                    if (!ProductExists(product.Id))
+                    if (!OrderExists(order.OrderId))
                     {
                         return NotFound();
                     }
@@ -113,10 +122,12 @@ namespace ERP_Bicicleteria.Controllers
                 }
                 return RedirectToAction(nameof(Index));
             }
-            return View(product);
+            ViewData["ClientId"] = new SelectList(_context.Client, "ClientId", "ClientId", order.ClientId);
+            ViewData["EmployeeId"] = new SelectList(_context.Employee, "EmployeeId", "EmployeeId", order.EmployeeId);
+            return View(order);
         }
 
-        // GET: Products/Delete/5
+        // GET: Orders/Delete/5
         public async Task<IActionResult> Delete(int? id)
         {
             if (id == null)
@@ -124,34 +135,36 @@ namespace ERP_Bicicleteria.Controllers
                 return NotFound();
             }
 
-            var product = await _context.Products
-                .FirstOrDefaultAsync(m => m.Id == id);
-            if (product == null)
+            var order = await _context.Order
+                .Include(o => o.Client)
+                .Include(o => o.Employee)
+                .FirstOrDefaultAsync(m => m.OrderId == id);
+            if (order == null)
             {
                 return NotFound();
             }
 
-            return View(product);
+            return View(order);
         }
 
-        // POST: Products/Delete/5
+        // POST: Orders/Delete/5
         [HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(int id)
         {
-            var product = await _context.Products.FindAsync(id);
-            if (product != null)
+            var order = await _context.Order.FindAsync(id);
+            if (order != null)
             {
-                _context.Products.Remove(product);
+                _context.Order.Remove(order);
             }
 
             await _context.SaveChangesAsync();
             return RedirectToAction(nameof(Index));
         }
 
-        private bool ProductExists(int id)
+        private bool OrderExists(int id)
         {
-            return _context.Products.Any(e => e.Id == id);
+            return _context.Order.Any(e => e.OrderId == id);
         }
     }
 }

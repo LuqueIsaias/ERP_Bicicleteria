@@ -4,6 +4,7 @@ using ERP_Bicicleteria.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace ERP_Bicicleteria.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20241228235741_CrearTablas")]
+    partial class CrearTablas
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -82,9 +85,6 @@ namespace ERP_Bicicleteria.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("OrderId"));
 
-                    b.Property<int>("ClientId")
-                        .HasColumnType("int");
-
                     b.Property<int>("EmployeeId")
                         .HasColumnType("int");
 
@@ -92,10 +92,6 @@ namespace ERP_Bicicleteria.Migrations
                         .HasColumnType("datetime2");
 
                     b.HasKey("OrderId");
-
-                    b.HasIndex("ClientId");
-
-                    b.HasIndex("EmployeeId");
 
                     b.ToTable("Order");
                 });
@@ -119,10 +115,6 @@ namespace ERP_Bicicleteria.Migrations
 
                     b.HasKey("OrderDetailId");
 
-                    b.HasIndex("OrderId");
-
-                    b.HasIndex("ProductId");
-
                     b.ToTable("OrderDetail");
                 });
 
@@ -145,22 +137,11 @@ namespace ERP_Bicicleteria.Migrations
                     b.Property<decimal>("Price")
                         .HasColumnType("decimal(18,2)");
 
-                    b.Property<int>("ReorderLevel")
-                        .HasColumnType("int");
-
-                    b.Property<int>("Stock")
-                        .HasColumnType("int");
-
                     b.Property<string>("SupplierCode")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<int>("SupplierId")
-                        .HasColumnType("int");
-
                     b.HasKey("Id");
-
-                    b.HasIndex("SupplierId");
 
                     b.ToTable("Products");
                 });
@@ -196,75 +177,6 @@ namespace ERP_Bicicleteria.Migrations
                     b.HasKey("SupplierId");
 
                     b.ToTable("Suppliers");
-                });
-
-            modelBuilder.Entity("ERP_Bicicleteria.Models.Order", b =>
-                {
-                    b.HasOne("ERP_Bicicleteria.Models.Client", "Client")
-                        .WithMany("Orders")
-                        .HasForeignKey("ClientId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("ERP_Bicicleteria.Models.Employee", "Employee")
-                        .WithMany("Orders")
-                        .HasForeignKey("EmployeeId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("Client");
-
-                    b.Navigation("Employee");
-                });
-
-            modelBuilder.Entity("ERP_Bicicleteria.Models.OrderDetail", b =>
-                {
-                    b.HasOne("ERP_Bicicleteria.Models.Order", "Order")
-                        .WithMany("OrderDetails")
-                        .HasForeignKey("OrderId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("ERP_Bicicleteria.Models.Product", "Product")
-                        .WithMany()
-                        .HasForeignKey("ProductId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("Order");
-
-                    b.Navigation("Product");
-                });
-
-            modelBuilder.Entity("ERP_Bicicleteria.Models.Product", b =>
-                {
-                    b.HasOne("ERP_Bicicleteria.Models.Supplier", "Supplier")
-                        .WithMany("Products")
-                        .HasForeignKey("SupplierId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("Supplier");
-                });
-
-            modelBuilder.Entity("ERP_Bicicleteria.Models.Client", b =>
-                {
-                    b.Navigation("Orders");
-                });
-
-            modelBuilder.Entity("ERP_Bicicleteria.Models.Employee", b =>
-                {
-                    b.Navigation("Orders");
-                });
-
-            modelBuilder.Entity("ERP_Bicicleteria.Models.Order", b =>
-                {
-                    b.Navigation("OrderDetails");
-                });
-
-            modelBuilder.Entity("ERP_Bicicleteria.Models.Supplier", b =>
-                {
-                    b.Navigation("Products");
                 });
 #pragma warning restore 612, 618
         }

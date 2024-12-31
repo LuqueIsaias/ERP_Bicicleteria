@@ -18,6 +18,11 @@ namespace ERP_Bicicleteria.Models
 
             [Display(Name = "Código de Proveedor")]
             public string SupplierCode { get; set; } = string.Empty;
+            public int Stock {  get; set; }
+            public int ReorderLevel { get; set; }
+            public Supplier Supplier { get; set; }
+
+
      }
 }
 

@@ -10,22 +10,22 @@ using ERP_Bicicleteria.Models;
 
 namespace ERP_Bicicleteria.Controllers
 {
-    public class ProductsController : Controller
+    public class ClientsController : Controller
     {
         private readonly ApplicationDbContext _context;
 
-        public ProductsController(ApplicationDbContext context)
+        public ClientsController(ApplicationDbContext context)
         {
             _context = context;
         }
 
-        // GET: Products
+        // GET: Clients
         public async Task<IActionResult> Index()
         {
-            return View(await _context.Products.ToListAsync());
+            return View(await _context.Client.ToListAsync());
         }
 
-        // GET: Products/Details/5
+        // GET: Clients/Details/5
         public async Task<IActionResult> Details(int? id)
         {
             if (id == null)
@@ -33,39 +33,39 @@ namespace ERP_Bicicleteria.Controllers
                 return NotFound();
             }
 
-            var product = await _context.Products
-                .FirstOrDefaultAsync(m => m.Id == id);
-            if (product == null)
+            var client = await _context.Client
+                .FirstOrDefaultAsync(m => m.ClientId == id);
+            if (client == null)
             {
                 return NotFound();
             }
 
-            return View(product);
+            return View(client);
         }
 
-        // GET: Products/Create
+        // GET: Clients/Create
         public IActionResult Create()
         {
             return View();
         }
 
-        // POST: Products/Create
+        // POST: Clients/Create
         // To protect from overposting attacks, enable the specific properties you want to bind to.
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("Id,Name,Description,Price,SupplierCode,Stock,ReorderLevel")] Product product)
+        public async Task<IActionResult> Create([Bind("ClientId,Name,LastName,Cellphone")] Client client)
         {
             if (ModelState.IsValid)
             {
-                _context.Add(product);
+                _context.Add(client);
                 await _context.SaveChangesAsync();
                 return RedirectToAction(nameof(Index));
             }
-            return View(product);
+            return View(client);
         }
 
-        // GET: Products/Edit/5
+        // GET: Clients/Edit/5
         public async Task<IActionResult> Edit(int? id)
         {
             if (id == null)
@@ -73,22 +73,22 @@ namespace ERP_Bicicleteria.Controllers
                 return NotFound();
             }
 
-            var product = await _context.Products.FindAsync(id);
-            if (product == null)
+            var client = await _context.Client.FindAsync(id);
+            if (client == null)
             {
                 return NotFound();
             }
-            return View(product);
+            return View(client);
         }
 
-        // POST: Products/Edit/5
+        // POST: Clients/Edit/5
         // To protect from overposting attacks, enable the specific properties you want to bind to.
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, [Bind("Id,Name,Description,Price,SupplierCode,Stock,ReorderLevel")] Product product)
+        public async Task<IActionResult> Edit(int id, [Bind("ClientId,Name,LastName,Cellphone")] Client client)
         {
-            if (id != product.Id)
+            if (id != client.ClientId)
             {
                 return NotFound();
             }
@@ -97,12 +97,12 @@ namespace ERP_Bicicleteria.Controllers
             {
                 try
                 {
-                    _context.Update(product);
+                    _context.Update(client);
                     await _context.SaveChangesAsync();
                 }
                 catch (DbUpdateConcurrencyException)
                 {
-                    if (!ProductExists(product.Id))
+                    if (!ClientExists(client.ClientId))
                     {
                         return NotFound();
                     }
@@ -113,10 +113,10 @@ namespace ERP_Bicicleteria.Controllers
                 }
                 return RedirectToAction(nameof(Index));
             }
-            return View(product);
+            return View(client);
         }
 
-        // GET: Products/Delete/5
+        // GET: Clients/Delete/5
         public async Task<IActionResult> Delete(int? id)
         {
             if (id == null)
@@ -124,34 +124,34 @@ namespace ERP_Bicicleteria.Controllers
                 return NotFound();
             }
 
-            var product = await _context.Products
-                .FirstOrDefaultAsync(m => m.Id == id);
-            if (product == null)
+            var client = await _context.Client
+                .FirstOrDefaultAsync(m => m.ClientId == id);
+            if (client == null)
             {
                 return NotFound();
             }
 
-            return View(product);
+            return View(client);
         }
 
-        // POST: Products/Delete/5
+        // POST: Clients/Delete/5
         [HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(int id)
         {
-            var product = await _context.Products.FindAsync(id);
-            if (product != null)
+            var client = await _context.Client.FindAsync(id);
+            if (client != null)
             {
-                _context.Products.Remove(product);
+                _context.Client.Remove(client);
             }
 
             await _context.SaveChangesAsync();
             return RedirectToAction(nameof(Index));
         }
 
-        private bool ProductExists(int id)
+        private bool ClientExists(int id)
         {
-            return _context.Products.Any(e => e.Id == id);
+            return _context.Client.Any(e => e.ClientId == id);
         }
     }
 }
