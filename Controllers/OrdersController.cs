@@ -7,18 +7,22 @@ using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using ERP_Bicicleteria.Data;
 using ERP_Bicicleteria.Models;
+using ERP_Bicicleteria.Services;
+
 
 namespace ERP_Bicicleteria.Controllers
 {
     public class OrdersController : Controller
     {
         private readonly ApplicationDbContext _context;
+        private readonly OrderDetailService _orderDetailService;
 
-        public OrdersController(ApplicationDbContext context)
+
+        public OrdersController(ApplicationDbContext context, OrderDetailService orderDetailService)
         {
             _context = context;
+            _orderDetailService = orderDetailService;
         }
-
         // GET: Orders
         public async Task<IActionResult> Index()
         {
@@ -49,28 +53,49 @@ namespace ERP_Bicicleteria.Controllers
         // GET: Orders/Create
         public IActionResult Create()
         {
-            ViewData["ClientId"] = new SelectList(_context.Client, "ClientId", "ClientId");
-            ViewData["EmployeeId"] = new SelectList(_context.Employee, "EmployeeId", "EmployeeId");
-            return View();
+            // Cargar listas para dropdowns (empleados, clientes y productos)
+            ViewData["ClientId"] = new SelectList(_context.Client, "ClientId", "Name"); // Muestra el nombre del cliente
+            ViewData["EmployeeId"] = new SelectList(_context.Employee, "EmployeeId", "EmployeeName"); // Muestra el nombre del empleado
+            ViewData["ProductList"] = new SelectList(_context.Products, "Id", "Name"); // Para los detalles
+
+            return View(new OrderViewModel { OrderDate = DateTime.Today }); // Fecha predeterminada: hoy
         }
 
+
         // POST: Orders/Create
-        // To protect from overposting attacks, enable the specific properties you want to bind to.
-        // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
+
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("OrderId,EmployeeId,ClientId,OrderDate")] Order order)
+        public async Task<IActionResult> Create(OrderViewModel model)
         {
             if (ModelState.IsValid)
             {
-                _context.Add(order);
-                await _context.SaveChangesAsync();
+                // Crear la orden principal
+                var order = new Order
+                {
+                    EmployeeId = model.EmployeeId,
+                    ClientId = model.ClientId,
+                    OrderDate = model.OrderDate
+                };
+
+                _context.Order.Add(order);
+                await _context.SaveChangesAsync(); // Guardar para obtener el OrderId
+
+                // Añadir detalles usando el servicio
+                _orderDetailService.AddOrderDetails(order, model.OrderDetails);
+                await _context.SaveChangesAsync(); // Guardar detalles
+
                 return RedirectToAction(nameof(Index));
             }
-            ViewData["ClientId"] = new SelectList(_context.Client, "ClientId", "ClientId", order.ClientId);
-            ViewData["EmployeeId"] = new SelectList(_context.Employee, "EmployeeId", "EmployeeId", order.EmployeeId);
-            return View(order);
+
+            // Si hay errores, recargar dropdowns
+            ViewData["ClientId"] = new SelectList(_context.Client, "ClientId", "Name", model.ClientId);
+            ViewData["EmployeeId"] = new SelectList(_context.Employee, "EmployeeId", "EmployeeName", model.EmployeeId);
+            ViewData["ProductList"] = new SelectList(_context.Products, "Id", "Name");
+            return View(model);
         }
+
+
 
         // GET: Orders/Edit/5
         public async Task<IActionResult> Edit(int? id)
@@ -100,6 +125,13 @@ namespace ERP_Bicicleteria.Controllers
             if (id != order.OrderId)
             {
                 return NotFound();
+            }
+            foreach (var key in ModelState.Keys)
+            {
+                foreach (var error in ModelState[key].Errors)
+                {
+                    Console.WriteLine($"Error en {key}: {error.ErrorMessage}");
+                }
             }
 
             if (ModelState.IsValid)

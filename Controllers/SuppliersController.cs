@@ -54,16 +54,30 @@ namespace ERP_Bicicleteria.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
+        
         public async Task<IActionResult> Create([Bind("SupplierId,Name,ContactName,Address,City,Phone")] Supplier supplier)
         {
             if (ModelState.IsValid)
             {
-                _context.Add(supplier);
-                await _context.SaveChangesAsync();
-                return RedirectToAction(nameof(Index));
+                try
+                {
+                    _context.Add(supplier);
+                    await _context.SaveChangesAsync();
+                    TempData["SuccessMessage"] = "Proveedor creado exitosamente!";
+                    return RedirectToAction(nameof(Index));
+                }
+                catch (Exception ex)
+                {
+                    TempData["ErrorMessage"] = $"Error al crear el proveedor: {ex.Message}";
+                    return View(supplier);
+                }
             }
+
+            // Si ModelState no es válido, se regresa a la vista con los mensajes de error
+            TempData["ErrorMessage"] = "Hay un error en los datos ingresados.";
             return View(supplier);
         }
+
 
         // GET: Suppliers/Edit/5
         public async Task<IActionResult> Edit(int? id)

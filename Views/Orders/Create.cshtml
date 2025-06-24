@@ -12,19 +12,75 @@
     <div class="col-md-4">
         <form asp-action="Create">
             <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+
+            <!-- EmployeeId Select -->
             <div class="form-group">
                 <label asp-for="EmployeeId" class="control-label"></label>
-                <select asp-for="EmployeeId" class ="form-control" asp-items="ViewBag.EmployeeId"></select>
+                <select asp-for="EmployeeId" class="form-control" asp-items="ViewBag.EmployeeId">
+                    <option value="">Seleccione un empleado</option> <!-- Valor por defecto -->
+                </select>
+                <span asp-validation-for="EmployeeId" class="text-danger"></span>
             </div>
+
+            <!-- ClientId Select -->
             <div class="form-group">
                 <label asp-for="ClientId" class="control-label"></label>
-                <select asp-for="ClientId" class ="form-control" asp-items="ViewBag.ClientId"></select>
+                <select asp-for="ClientId" class="form-control" asp-items="ViewBag.ClientId">
+                    <option value="">Seleccione un cliente</option> <!-- Valor por defecto -->
+                </select>
+                <span asp-validation-for="ClientId" class="text-danger"></span>
             </div>
+
+            <!-- OrderDate Input -->
             <div class="form-group">
                 <label asp-for="OrderDate" class="control-label"></label>
-                <input asp-for="OrderDate" class="form-control" />
+                <input asp-for="OrderDate" class="form-control" type="date" />
                 <span asp-validation-for="OrderDate" class="text-danger"></span>
             </div>
+
+            <div class="form-group">
+                <label>Productos</label>
+                <div id="product-container">
+                    <div class="product-row mb-2">
+                        <select name="OrderDetails[0].ProductId" class="form-control" asp-items="ViewBag.ProductList">
+                            <option value="">Seleccione un producto</option>
+                        </select>
+                        <input type="number" name="OrderDetails[0].Quantity" class="form-control" placeholder="Cantidad" min="1" />
+                        <button type="button" class="btn btn-danger btn-sm remove-product">Eliminar</button>
+                    </div>
+                </div>
+                <button type="button" id="add-product" class="btn btn-secondary btn-sm">Añadir producto</button>
+            </div>
+
+            <!-- Botón de submit y scripts -->
+            @section Scripts {
+                @{
+                    await Html.RenderPartialAsync("_ValidationScriptsPartial");
+                }
+                <script>
+                    // Dinámicamente añade/elimina filas de productos
+                    $(document).ready(function () {
+                        let index = 1;
+                        $("#add-product").click(function () {
+                            const newRow = `
+                                <div class="product-row mb-2">
+                                    <select name="OrderDetails[${index}].ProductId" class="form-control" asp-items="ViewBag.ProductList">
+                                        <option value="">Seleccione un producto</option>
+                                    </select>
+                                    <input type="number" name="OrderDetails[${index}].Quantity" class="form-control" placeholder="Cantidad" min="1" />
+                                    <button type="button" class="btn btn-danger btn-sm remove-product">Eliminar</button>
+                                </div>`;
+                            $("#product-container").append(newRow);
+                            index++;
+                        });
+
+                        $(document).on("click", ".remove-product", function () {
+                            $(this).closest(".product-row").remove();
+                        });
+                    });
+                </script>
+            }
+
             <div class="form-group">
                 <input type="submit" value="Create" class="btn btn-primary" />
             </div>
@@ -37,5 +93,7 @@
 </div>
 
 @section Scripts {
-    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
 }

@@ -46,6 +46,8 @@ namespace ERP_Bicicleteria.Controllers
         // GET: Products/Create
         public IActionResult Create()
         {
+            ViewData["SupplierId"] = new SelectList(_context.Suppliers, "SupplierId", "Name");
+
             return View();
         }
 
@@ -54,16 +56,19 @@ namespace ERP_Bicicleteria.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("Id,Name,Description,Price,SupplierCode,Stock,ReorderLevel")] Product product)
+        public async Task<IActionResult> Create([Bind("Id,Name,Description,Price,Stock,ReorderLevel,SupplierId")] Product product)
         {
+
             if (ModelState.IsValid)
             {
                 _context.Add(product);
                 await _context.SaveChangesAsync();
                 return RedirectToAction(nameof(Index));
             }
+            ViewData["SupplierId"] = new SelectList(_context.Suppliers, "SupplierId", "Name", product.SupplierId);
             return View(product);
         }
+
 
         // GET: Products/Edit/5
         public async Task<IActionResult> Edit(int? id)
@@ -78,6 +83,7 @@ namespace ERP_Bicicleteria.Controllers
             {
                 return NotFound();
             }
+            ViewData["SupplierId"] = new SelectList(_context.Suppliers, "SupplierId", "Name", product.SupplierId);
             return View(product);
         }
 
@@ -86,12 +92,13 @@ namespace ERP_Bicicleteria.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, [Bind("Id,Name,Description,Price,SupplierCode,Stock,ReorderLevel")] Product product)
+        public async Task<IActionResult> Edit(int id, [Bind("Id,Name,Description,Price,Stock,ReorderLevel,SupplierId")] Product product)
         {
             if (id != product.Id)
             {
                 return NotFound();
             }
+           
 
             if (ModelState.IsValid)
             {
@@ -113,6 +120,7 @@ namespace ERP_Bicicleteria.Controllers
                 }
                 return RedirectToAction(nameof(Index));
             }
+            ViewData["SupplierId"] = new SelectList(_context.Suppliers, "SupplierId", "Name", product.SupplierId);
             return View(product);
         }
 
