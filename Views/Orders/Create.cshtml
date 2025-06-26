@@ -1,4 +1,4 @@
-﻿@model ERP_Bicicleteria.Models.Order
+﻿@model ERP_Bicicleteria.Models.OrderViewModel
 
 @{
     ViewData["Title"] = "Create";
@@ -57,25 +57,68 @@
                 @{
                     await Html.RenderPartialAsync("_ValidationScriptsPartial");
                 }
+
                 <script>
-                    // Dinámicamente añade/elimina filas de productos
-                    $(document).ready(function () {
+                    // Datos iniciales de productos (cargados desde el servidor)
+                    const productList = @Html.Raw(Json.Serialize(ViewBag.ProductList as SelectList));
+
+                    $(document).ready(function() {
                         let index = 1;
-                        $("#add-product").click(function () {
-                            const newRow = `
-                                <div class="product-row mb-2">
-                                    <select name="OrderDetails[${index}].ProductId" class="form-control" asp-items="ViewBag.ProductList">
-                                        <option value="">Seleccione un producto</option>
-                                    </select>
-                                    <input type="number" name="OrderDetails[${index}].Quantity" class="form-control" placeholder="Cantidad" min="1" />
-                                    <button type="button" class="btn btn-danger btn-sm remove-product">Eliminar</button>
-                                </div>`;
-                            $("#product-container").append(newRow);
+
+                        // Función para crear un nuevo select de productos
+                        function createProductSelect(index) {
+                            const select = document.createElement('select');
+                            select.name = `OrderDetails[${index}].ProductId`;
+                            select.className = 'form-control';
+
+                            // Agregar opción por defecto
+                            const defaultOption = document.createElement('option');
+                            defaultOption.value = '';
+                            defaultOption.text = 'Seleccione un producto';
+                            select.appendChild(defaultOption);
+
+                            // Agregar opciones de productos
+                            productList.forEach(item => {
+                                const option = document.createElement('option');
+                                option.value = item.value;
+                                option.text = item.text;
+                                select.appendChild(option);
+                            });
+
+                            return select;
+                        }
+
+                        $("#add-product").click(function() {
+                            const newRow = document.createElement('div');
+                            newRow.className = 'product-row mb-2';
+
+                            // Crear select de productos
+                            const productSelect = createProductSelect(index);
+                            newRow.appendChild(productSelect);
+
+                            // Crear input de cantidad
+                            const quantityInput = document.createElement('input');
+                            quantityInput.type = 'number';
+                            quantityInput.name = `OrderDetails[${index}].Quantity`;
+                            quantityInput.className = 'form-control';
+                            quantityInput.placeholder = 'Cantidad';
+                            quantityInput.min = '1';
+                            newRow.appendChild(quantityInput);
+
+                            // Crear botón de eliminar
+                            const removeButton = document.createElement('button');
+                            removeButton.type = 'button';
+                            removeButton.className = 'btn btn-danger btn-sm remove-product';
+                            removeButton.textContent = 'Eliminar';
+                            newRow.appendChild(removeButton);
+
+                            // Agregar al contenedor
+                            document.getElementById('product-container').appendChild(newRow);
                             index++;
                         });
 
-                        $(document).on("click", ".remove-product", function () {
-                            $(this).closest(".product-row").remove();
+                        $(document).on('click', '.remove-product', function() {
+                            $(this).closest('.product-row').remove();
                         });
                     });
                 </script>
@@ -92,8 +135,3 @@
     <a asp-action="Index">Back to List</a>
 </div>
 
-@section Scripts {
-    @{
-        await Html.RenderPartialAsync("_ValidationScriptsPartial");
-    }
-}

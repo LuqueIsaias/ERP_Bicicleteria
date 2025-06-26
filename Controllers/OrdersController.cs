@@ -15,10 +15,10 @@ namespace ERP_Bicicleteria.Controllers
     public class OrdersController : Controller
     {
         private readonly ApplicationDbContext _context;
-        private readonly OrderDetailService _orderDetailService;
+        private readonly OrderDetailService _orderDetailService; //Servicio inyectado para manejar detalles de la orden
 
-
-        public OrdersController(ApplicationDbContext context, OrderDetailService orderDetailService)
+        // Constructor que inyecta el contexto y el servicio de detalles de la orden
+        public OrdersController(ApplicationDbContext context, OrderDetailService orderDetailService) 
         {
             _context = context;
             _orderDetailService = orderDetailService;

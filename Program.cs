@@ -8,7 +8,8 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddDbContext<ApplicationDbContext>(options =>
 options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
 
-//builder.Services.AddScoped<OrderDetailService>();
+//Aqui registramos los servicios que vamos a utilizar en la aplicacion
+builder.Services.AddScoped<OrderDetailService>();
 builder.Services.AddControllersWithViews();
 
 var app = builder.Build();
